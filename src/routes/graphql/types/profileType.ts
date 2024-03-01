@@ -1,8 +1,12 @@
 import { GraphQLObjectType, GraphQLBoolean, GraphQLInt } from 'graphql';
 import { UUIDType } from './uuid.js';
-import { MemberTypeEnum } from './memberType.js';
+import { MemberTypeEnum, memberType } from './memberType.js';
+import { MemberTypeId } from '../../member-types/schemas.js';
+import { PrismaClient  } from '@prisma/client';
 
-export const profileType = new GraphQLObjectType({
+
+export function createProfileType (prisma: PrismaClient){
+return new GraphQLObjectType({
     name: 'Profile',
     fields: () => ({
       id: {
@@ -25,5 +29,16 @@ export const profileType = new GraphQLObjectType({
         type: MemberTypeEnum,
         description: 'The type of membership the user has',
       },
+      memberType: {
+        type: memberType,
+        resolve: async (parent: {memberTypeId: MemberTypeId} ) => {
+          return prisma.memberType.findUnique({
+              where: {
+                id: parent.memberTypeId,
+              },
+            });
+        },
+      }
     }),
   });
+}

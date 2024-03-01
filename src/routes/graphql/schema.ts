@@ -4,10 +4,11 @@ import { createUserType } from './types/userType.js';
 import { MemberTypeEnum, memberType } from './types/memberType.js';
 import { UUIDType } from './types/uuid.js';
 import { postType } from './types/postType.js';
-import { profileType } from './types/profileType.js';
+import { createProfileType } from './types/profileType.js';
 
-export function createSchema (prisma: PrismaClient){
-  const userType = createUserType(prisma);
+export function createSchema (prisma: PrismaClient){  
+  const profileType = createProfileType(prisma);
+  const userType = createUserType(prisma, profileType);
 
   return new GraphQLSchema({
     query: new GraphQLObjectType({
@@ -22,7 +23,7 @@ export function createSchema (prisma: PrismaClient){
         user: {
           type: userType,
           args: { id: { type: UUIDType } },
-          resolve: async (_parent, args: { id: string }) => {
+          resolve: async (_, args: { id: string }) => {
             return prisma.user.findUnique({
               where: {
                 id: args.id,
@@ -39,7 +40,7 @@ export function createSchema (prisma: PrismaClient){
         memberType: {
           type: memberType,
           args: { id: { type: MemberTypeEnum } },
-          resolve: async (_parent, args: { id: string }) => {
+          resolve: async (_, args: { id: string }) => {
             return prisma.memberType.findUnique({
               where: {
                 id: args.id,
@@ -53,11 +54,33 @@ export function createSchema (prisma: PrismaClient){
             return prisma.post.findMany();
           },
         },
+        post: {
+          type: postType,
+          args: { id: { type: UUIDType } }, 
+          resolve: (_, args: { id: string }) => {
+            return prisma.post.findUnique({ 
+              where: {
+                id: args.id,
+              },
+             })
+          }
+        },
         profiles: {
           type: new GraphQLList(profileType),
           resolve: async () => {
             return prisma.profile.findMany();
           },
+        },
+        profile: { 
+          type: profileType,
+          args:  { id: { type: UUIDType } },
+          resolve: (_, args: { id: string }) => {
+            return prisma.profile.findUnique({ 
+              where: {
+                id: args.id,
+              },
+            })
+          }
         },
       },
     }),

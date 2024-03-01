@@ -2,13 +2,12 @@ import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLList} from 'grap
 import { UUIDType } from './uuid.js';
 import { postType } from './postType.js';
 import { PrismaClient  } from '@prisma/client';
-import { profileType } from './profileType.js';
 
-type UserType = GraphQLObjectType;
 type parentType = { id: string };
 
-export function createUserType (prisma: PrismaClient){
- const userType: UserType  = new GraphQLObjectType({
+export function createUserType (prisma: PrismaClient, profileType: GraphQLObjectType){
+
+ const userType: GraphQLObjectType  = new GraphQLObjectType({
     name: 'User',
     description: 'The user',
     fields: () => ({
