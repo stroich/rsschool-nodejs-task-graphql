@@ -1,8 +1,14 @@
-import { GraphQLObjectType, GraphQLString, GraphQLFloat} from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLList} from 'graphql';
 import { UUIDType } from './uuid.js';
+import { postType } from './postType.js';
+import { PrismaClient  } from '@prisma/client';
+import { profileType } from './profileType.js';
 
+type UserType = GraphQLObjectType;
+type parentType = { id: string };
 
-export const userType = new GraphQLObjectType({
+export function createUserType (prisma: PrismaClient){
+ const userType: UserType  = new GraphQLObjectType({
     name: 'User',
     description: 'The user',
     fields: () => ({
@@ -18,5 +24,56 @@ export const userType = new GraphQLObjectType({
         type: GraphQLFloat,
         description: 'The balance of the user',
       },
+      posts: {
+        type: new GraphQLList(postType),
+        resolve: async (parent: parentType) => {
+          return prisma.post.findMany({
+            where: {
+              authorId: parent.id,
+            },
+          });
+        },
+      },
+      profile: {
+        type: profileType,
+        args: { id: { type: UUIDType } },
+        resolve: async (parent: parentType) => {
+          return prisma.profile.findUnique({
+            where: {
+              userId: parent.id,
+            },
+          });
+        },
+      },
+      userSubscribedTo: {
+        type: new GraphQLList(userType),
+        resolve: async (parent: parentType) => {
+          return prisma.user.findMany({
+            where: {
+              subscribedToUser: {
+                some: {
+                  subscriberId: parent.id,
+                },
+              },
+            },
+          });
+        },
+      },
+      subscribedToUser: {
+        type: new GraphQLList(userType),
+        resolve: async (parent: parentType) => {
+          return prisma.user.findMany({
+            where: {
+              userSubscribedTo: {
+                some: {
+                  authorId: parent.id,
+                },
+              },
+            },
+          });
+        },
+      },
     }),
   });
+  return userType;
+}

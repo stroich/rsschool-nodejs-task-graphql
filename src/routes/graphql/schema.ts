@@ -1,12 +1,14 @@
 import { GraphQLSchema, GraphQLObjectType, GraphQLList } from 'graphql';
 import { PrismaClient  } from '@prisma/client';
-import { userType } from './types/userType.js';
-import { memberType } from './types/memberType.js';
+import { createUserType } from './types/userType.js';
+import { MemberTypeEnum, memberType } from './types/memberType.js';
 import { UUIDType } from './types/uuid.js';
 import { postType } from './types/postType.js';
 import { profileType } from './types/profileType.js';
 
 export function createSchema (prisma: PrismaClient){
+  const userType = createUserType(prisma);
+
   return new GraphQLSchema({
     query: new GraphQLObjectType({
       name: 'RootQueryType',
@@ -32,6 +34,17 @@ export function createSchema (prisma: PrismaClient){
           type: new GraphQLList(memberType),
           resolve: async () => {
             return prisma.memberType.findMany();
+          },
+        },
+        memberType: {
+          type: memberType,
+          args: { id: { type: MemberTypeEnum } },
+          resolve: async (_parent, args: { id: string }) => {
+            return prisma.memberType.findUnique({
+              where: {
+                id: args.id,
+              },
+            });
           },
         },
         posts: {
