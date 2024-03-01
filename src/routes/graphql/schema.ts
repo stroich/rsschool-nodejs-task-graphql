@@ -3,6 +3,8 @@ import { PrismaClient  } from '@prisma/client';
 import { userType } from './types/userType.js';
 import { memberType } from './types/memberType.js';
 import { UUIDType } from './types/uuid.js';
+import { postType } from './types/postType.js';
+import { profileType } from './types/profileType.js';
 
 export function createSchema (prisma: PrismaClient){
   return new GraphQLSchema({
@@ -32,7 +34,18 @@ export function createSchema (prisma: PrismaClient){
             return prisma.memberType.findMany();
           },
         },
-        
+        posts: {
+          type: new GraphQLList(postType),
+          resolve: async () => {
+            return prisma.post.findMany();
+          },
+        },
+        profiles: {
+          type: new GraphQLList(profileType),
+          resolve: async () => {
+            return prisma.profile.findMany();
+          },
+        },
       },
     }),
   });

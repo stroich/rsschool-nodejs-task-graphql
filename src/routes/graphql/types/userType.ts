@@ -8,15 +8,15 @@ export const userType = new GraphQLObjectType({
     fields: () => ({
       id: {
         type: UUIDType,
-        description: 'The id',
+        description: 'The unique identifier of the user',
       },
       name: {
         type: GraphQLString,
-        description: 'The name',
+        description: 'The name of the user',
       },
       balance: {
         type: GraphQLFloat,
-        description: 'The balance',
+        description: 'The balance of the user',
       },
     }),
   });
