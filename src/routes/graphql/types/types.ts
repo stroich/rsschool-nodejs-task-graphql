@@ -30,3 +30,8 @@ export type ChangeProfile = {
   yearOfBirth: number;
   memberTypeId: MemberTypeId;
 };
+
+export type ChangeSubscribeTo = {
+  userId: string;
+  authorId: string;
+};

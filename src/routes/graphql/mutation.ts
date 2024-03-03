@@ -5,6 +5,7 @@ import { changePostGraphQL, createPostGraphQL, postType } from './types/postType
 import {
   ChangePost,
   ChangeProfile,
+  ChangeSubscribeTo,
   CreatePost,
   CreateProfile,
   CreateUser,
@@ -160,6 +161,54 @@ export function createMutation(
             },
             data: args.dto,
           });
+        },
+      },
+      //user-subscribed-to
+      subscribeTo: {
+        type: userType,
+        args: {
+          userId: {
+            type: UUIDType,
+          },
+          authorId: {
+            type: UUIDType,
+          },
+        },
+        resolve: (_, args: ChangeSubscribeTo) => {
+          return prisma.user.update({
+            where: {
+              id: args.userId,
+            },
+            data: {
+              userSubscribedTo: {
+                create: {
+                  authorId: args.authorId,
+                },
+              },
+            },
+          });
+        },
+      },
+      unsubscribeFrom: {
+        type: UUIDType,
+        args: {
+          userId: {
+            type: UUIDType,
+          },
+          authorId: {
+            type: UUIDType,
+          },
+        },
+        resolve: async (_, args: ChangeSubscribeTo) => {
+          await prisma.subscribersOnAuthors.delete({
+            where: {
+              subscriberId_authorId: {
+                subscriberId: args.userId,
+                authorId: args.authorId,
+              },
+            },
+          });
+          return null;
         },
       },
     },
