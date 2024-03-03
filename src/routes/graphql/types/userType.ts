@@ -1,4 +1,10 @@
-import { GraphQLObjectType, GraphQLString, GraphQLFloat, GraphQLList } from 'graphql';
+import {
+  GraphQLObjectType,
+  GraphQLInputObjectType,
+  GraphQLString,
+  GraphQLFloat,
+  GraphQLList,
+} from 'graphql';
 import { UUIDType } from './uuid.js';
 import { postType } from './postType.js';
 import { PrismaClient } from '@prisma/client';
@@ -74,3 +80,17 @@ export function createUserType(prisma: PrismaClient, profileType: GraphQLObjectT
   });
   return userType;
 }
+
+export const createUserGraphQL = new GraphQLInputObjectType({
+  name: 'CreateUserInput',
+  fields: () => ({
+    name: {
+      type: GraphQLString,
+      description: 'The name of the user',
+    },
+    balance: {
+      type: GraphQLFloat,
+      description: 'The balance of the user',
+    },
+  }),
+});

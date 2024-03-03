@@ -1,16 +1,15 @@
 import { GraphQLObjectType, GraphQLList } from 'graphql';
 import { PrismaClient } from '@prisma/client';
-import { createUserType } from './types/userType.js';
 import { MemberTypeEnum, memberType } from './types/memberType.js';
 import { UUIDType } from './types/uuid.js';
 import { postType } from './types/postType.js';
-import { createProfileType } from './types/profileType.js';
 import { typeWithID } from './types/types.js';
 
-export function createQuery(prisma: PrismaClient) {
-  const profileType = createProfileType(prisma);
-  const userType = createUserType(prisma, profileType);
-
+export function createQuery(
+  prisma: PrismaClient,
+  profileType: GraphQLObjectType,
+  userType: GraphQLObjectType,
+) {
   return new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
