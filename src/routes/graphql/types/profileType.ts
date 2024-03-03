@@ -1,4 +1,9 @@
-import { GraphQLObjectType, GraphQLBoolean, GraphQLInt } from 'graphql';
+import {
+  GraphQLObjectType,
+  GraphQLInputObjectType,
+  GraphQLBoolean,
+  GraphQLInt,
+} from 'graphql';
 import { UUIDType } from './uuid.js';
 import { MemberTypeEnum, memberType } from './memberType.js';
 import { MemberTypeId } from '../../member-types/schemas.js';
@@ -41,3 +46,25 @@ export function createProfileType(prisma: PrismaClient) {
     }),
   });
 }
+
+export const createProfileGraphQL = new GraphQLInputObjectType({
+  name: 'CreateProfileInput',
+  fields: () => ({
+    isMale: {
+      type: GraphQLBoolean,
+      description: 'Whether the user is male or female',
+    },
+    yearOfBirth: {
+      type: GraphQLInt,
+      description: 'The year of birth of the user',
+    },
+    userId: {
+      type: UUIDType,
+      description: 'The ID of the user the profile belongs to',
+    },
+    memberTypeId: {
+      type: MemberTypeEnum,
+      description: 'The type of membership the user has',
+    },
+  }),
+});

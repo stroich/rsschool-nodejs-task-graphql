@@ -2,8 +2,9 @@ import { GraphQLObjectType } from 'graphql';
 import { PrismaClient } from '@prisma/client';
 import { UUIDType } from './types/uuid.js';
 import { createPostGraphQL, postType } from './types/postType.js';
-import { CreatePost, CreateUser, typeWithID } from './types/types.js';
+import { CreatePost, CreateProfile, CreateUser, typeWithID } from './types/types.js';
 import { createUserGraphQL } from './types/userType.js';
+import { createProfileGraphQL } from './types/profileType.js';
 
 export function createMutation(
   prisma: PrismaClient,
@@ -26,7 +27,7 @@ export function createMutation(
         },
       },
       deletePost: {
-        type: postType,
+        type: UUIDType,
         args: {
           id: {
             type: UUIDType,
@@ -73,7 +74,7 @@ export function createMutation(
         },
       },
       deleteUser: {
-        type: userType,
+        type: UUIDType,
         args: {
           id: {
             type: UUIDType,
@@ -100,6 +101,53 @@ export function createMutation(
         },
         resolve: (_parent, args: { id: string; dto: CreateUser }) => {
           return prisma.user.update({
+            where: {
+              id: args.id,
+            },
+            data: args.dto,
+          });
+        },
+      },
+      //PROFILE
+      createProfile: {
+        type: profileType,
+        args: {
+          dto: {
+            type: createProfileGraphQL,
+          },
+        },
+        resolve: (_, args: { dto: CreateProfile }) => {
+          return prisma.profile.create({ data: args.dto });
+        },
+      },
+      deleteProfile: {
+        type: UUIDType,
+        args: {
+          id: {
+            type: UUIDType,
+          },
+        },
+        resolve: async (_, args: typeWithID) => {
+          await prisma.profile.delete({
+            where: {
+              id: args.id,
+            },
+          });
+          return null;
+        },
+      },
+      changeProfile: {
+        type: profileType,
+        args: {
+          id: {
+            type: UUIDType,
+          },
+          dto: {
+            type: createProfileGraphQL,
+          },
+        },
+        resolve: (_parent, args: { id: string; dto: CreateProfile }) => {
+          return prisma.profile.update({
             where: {
               id: args.id,
             },
