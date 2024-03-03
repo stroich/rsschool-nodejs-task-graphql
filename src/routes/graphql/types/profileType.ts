@@ -2,11 +2,10 @@ import { GraphQLObjectType, GraphQLBoolean, GraphQLInt } from 'graphql';
 import { UUIDType } from './uuid.js';
 import { MemberTypeEnum, memberType } from './memberType.js';
 import { MemberTypeId } from '../../member-types/schemas.js';
-import { PrismaClient  } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
-
-export function createProfileType (prisma: PrismaClient){
-return new GraphQLObjectType({
+export function createProfileType(prisma: PrismaClient) {
+  return new GraphQLObjectType({
     name: 'Profile',
     fields: () => ({
       id: {
@@ -31,14 +30,14 @@ return new GraphQLObjectType({
       },
       memberType: {
         type: memberType,
-        resolve: async (parent: {memberTypeId: MemberTypeId} ) => {
+        resolve: async (parent: { memberTypeId: MemberTypeId }) => {
           return prisma.memberType.findUnique({
-              where: {
-                id: parent.memberTypeId,
-              },
-            });
+            where: {
+              id: parent.memberTypeId,
+            },
+          });
         },
-      }
+      },
     }),
   });
 }

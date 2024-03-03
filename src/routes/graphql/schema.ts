@@ -1,88 +1,14 @@
-import { GraphQLSchema, GraphQLObjectType, GraphQLList } from 'graphql';
-import { PrismaClient  } from '@prisma/client';
-import { createUserType } from './types/userType.js';
-import { MemberTypeEnum, memberType } from './types/memberType.js';
-import { UUIDType } from './types/uuid.js';
-import { postType } from './types/postType.js';
-import { createProfileType } from './types/profileType.js';
+import { GraphQLSchema } from 'graphql';
+import { PrismaClient } from '@prisma/client';
+import { createQuery } from './query.js';
+import { createMutation } from './mutation.js';
 
-export function createSchema (prisma: PrismaClient){  
-  const profileType = createProfileType(prisma);
-  const userType = createUserType(prisma, profileType);
+export function createSchema(prisma: PrismaClient) {
+  const query = createQuery(prisma);
+  const mutation = createMutation(prisma);
 
   return new GraphQLSchema({
-    query: new GraphQLObjectType({
-      name: 'RootQueryType',
-      fields: {
-        users: {
-          type: new GraphQLList(userType),
-          resolve: async () => {
-            return prisma.user.findMany();
-          },
-        },
-        user: {
-          type: userType,
-          args: { id: { type: UUIDType } },
-          resolve: async (_, args: { id: string }) => {
-            return prisma.user.findUnique({
-              where: {
-                id: args.id,
-              },
-            });
-          },
-        },
-        memberTypes: {
-          type: new GraphQLList(memberType),
-          resolve: async () => {
-            return prisma.memberType.findMany();
-          },
-        },
-        memberType: {
-          type: memberType,
-          args: { id: { type: MemberTypeEnum } },
-          resolve: async (_, args: { id: string }) => {
-            return prisma.memberType.findUnique({
-              where: {
-                id: args.id,
-              },
-            });
-          },
-        },
-        posts: {
-          type: new GraphQLList(postType),
-          resolve: async () => {
-            return prisma.post.findMany();
-          },
-        },
-        post: {
-          type: postType,
-          args: { id: { type: UUIDType } }, 
-          resolve: (_, args: { id: string }) => {
-            return prisma.post.findUnique({ 
-              where: {
-                id: args.id,
-              },
-             })
-          }
-        },
-        profiles: {
-          type: new GraphQLList(profileType),
-          resolve: async () => {
-            return prisma.profile.findMany();
-          },
-        },
-        profile: { 
-          type: profileType,
-          args:  { id: { type: UUIDType } },
-          resolve: (_, args: { id: string }) => {
-            return prisma.profile.findUnique({ 
-              where: {
-                id: args.id,
-              },
-            })
-          }
-        },
-      },
-    }),
+    query: query,
+    mutation: mutation,
   });
 }
