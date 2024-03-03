@@ -94,3 +94,17 @@ export const createUserGraphQL = new GraphQLInputObjectType({
     },
   }),
 });
+
+export const changeUserGraphQL = new GraphQLInputObjectType({
+  name: 'ChangeUserInput',
+  fields: () => ({
+    name: {
+      type: GraphQLString,
+      description: 'The name of the user',
+    },
+    balance: {
+      type: GraphQLFloat,
+      description: 'The balance of the user',
+    },
+  }),
+});

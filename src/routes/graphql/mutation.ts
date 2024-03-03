@@ -1,10 +1,17 @@
 import { GraphQLObjectType } from 'graphql';
 import { PrismaClient } from '@prisma/client';
 import { UUIDType } from './types/uuid.js';
-import { createPostGraphQL, postType } from './types/postType.js';
-import { CreatePost, CreateProfile, CreateUser, typeWithID } from './types/types.js';
-import { createUserGraphQL } from './types/userType.js';
-import { createProfileGraphQL } from './types/profileType.js';
+import { changePostGraphQL, createPostGraphQL, postType } from './types/postType.js';
+import {
+  ChangePost,
+  ChangeProfile,
+  CreatePost,
+  CreateProfile,
+  CreateUser,
+  typeWithID,
+} from './types/types.js';
+import { changeUserGraphQL, createUserGraphQL } from './types/userType.js';
+import { changeProfileGraphQL, createProfileGraphQL } from './types/profileType.js';
 
 export function createMutation(
   prisma: PrismaClient,
@@ -49,10 +56,10 @@ export function createMutation(
             type: UUIDType,
           },
           dto: {
-            type: createPostGraphQL,
+            type: changePostGraphQL,
           },
         },
-        resolve: (_, args: { id: string; dto: CreatePost }) => {
+        resolve: (_, args: { id: string; dto: ChangePost }) => {
           return prisma.post.update({
             where: {
               id: args.id,
@@ -96,7 +103,7 @@ export function createMutation(
             type: UUIDType,
           },
           dto: {
-            type: createUserGraphQL,
+            type: changeUserGraphQL,
           },
         },
         resolve: (_parent, args: { id: string; dto: CreateUser }) => {
@@ -143,10 +150,10 @@ export function createMutation(
             type: UUIDType,
           },
           dto: {
-            type: createProfileGraphQL,
+            type: changeProfileGraphQL,
           },
         },
-        resolve: (_parent, args: { id: string; dto: CreateProfile }) => {
+        resolve: (_parent, args: { id: string; dto: ChangeProfile }) => {
           return prisma.profile.update({
             where: {
               id: args.id,

@@ -40,3 +40,17 @@ export const createPostGraphQL = new GraphQLInputObjectType({
     },
   }),
 });
+
+export const changePostGraphQL = new GraphQLInputObjectType({
+  name: 'ChangePostInput',
+  fields: () => ({
+    title: {
+      type: GraphQLString,
+      description: 'The title of the post',
+    },
+    content: {
+      type: GraphQLString,
+      description: 'The content of the post',
+    },
+  }),
+});
